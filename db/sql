@@ -1,0 +1,10 @@
+CREATE TABLE "rule" (
+  "id" varchar(50) NOT NULL,
+  "rule" varchar(100) NOT NULL DEFAULT '',
+  "startTime" datetime DEFAULT NULL,
+  "endTime" datetime DEFAULT NULL,
+  "sort" integer DEFAULT 0,
+  PRIMARY KEY ("id")
+);
+
+INSERT INTO "main"."rule"("id", "rule", "startTime", "endTime", "sort") VALUES ('0', '.*新年.*', NULL, NULL, 0);
