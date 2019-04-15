@@ -8,3 +8,6 @@ reply_group_list = [
     '麻将小分队',
     '小组织'
 ]
+reply_friend_list = [
+
+]

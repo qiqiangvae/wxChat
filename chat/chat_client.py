@@ -3,7 +3,7 @@ import itchat
 from rule.rule_data.rule_client import RuleClient
 from datetime import datetime
 from chat.tuling import Tuling
-from chat import reply_group_list
+from chat import reply_group_list, reply_friend_list
 import re
 
 
@@ -26,7 +26,6 @@ def text_listener(msg):
     # 获取所有群组
     chatrooms = itchat.get_chatrooms()
     # 获取授权群组
-
     can_next = False
     for group in chatrooms:
         if not can_next:
@@ -41,12 +40,11 @@ def text_listener(msg):
     return reply
 
 
-# @itchat.msg_register(itchat.content.TEXT)
+@itchat.msg_register(itchat.content.TEXT, isFriendChat=True)
 def text_listener(msg):
     msg_text_ = msg['Text']
     print('收到消息%s' % msg_text_)
-    if msg['FromUserName'] != '@de29eada0953460acaf8cb88dd1d830e':
-        return
+    can_next = False
     rule_list = RuleClient.query(order='sort')
     for rule in rule_list:
         if rule['startTime'] and rule['endTime']:
