@@ -32,8 +32,8 @@ def text_listener(msg):
         return
     group_ = groups[0]
     text_ = msg['Text']
-    nick_name_ = pinyin.get_pinyin(group_['NickName']).replace("-", '')
-    reply = '【七七回复】' + Tuling.get_response(text_, user=nick_name_)
+    nick_name_ = group_['NickName']
+    reply = '【七七回复】' + Tuling.get_response(text_, user=pinyin.get_pinyin(nick_name_).replace("-", ''))
     print('收到群%s消息：%s,回复消息： %s' % (nick_name_, text_, reply))
     return reply
 
@@ -47,8 +47,8 @@ def text_listener(msg):
         return
     friends_ = friends[0]
     text_ = msg['Text']
-    nick_name_ = pinyin.get_pinyin(friends_['NickName']).replace("-", '')
-    reply = '【七七回复】' + Tuling.get_response(text_, user=nick_name_)
+    nick_name_ = friends_['NickName']
+    reply = '【七七回复】' + Tuling.get_response(text_, user=pinyin.get_pinyin(nick_name_).replace("-", ''))
     print('收到朋友%s消息：%s,回复消息 %s' % (nick_name_, text_, reply))
     return reply
 
