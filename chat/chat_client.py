@@ -1,10 +1,12 @@
-import itchat
-
-from rule.rule_data.rule_client import RuleClient
-from datetime import datetime
-from chat.tuling import Tuling
-from chat import reply_group_list, reply_friend_list
 import re
+from datetime import datetime
+
+import itchat
+import xpinyin
+
+from chat import reply_group_list, reply_friend_list
+from chat.tuling import Tuling
+from rule.rule_data.rule_client import RuleClient
 
 
 class WxChat(object):
@@ -23,24 +25,35 @@ class WxChat(object):
 
 @itchat.msg_register([itchat.content.TEXT], isGroupChat=True)
 def text_listener(msg):
-    # 获取所有群组
-    chatrooms = itchat.get_chatrooms()
-    # 获取授权群组
-    can_next = False
-    for group in chatrooms:
-        if not can_next:
-            if group['NickName'] in reply_group_list and group['UserName'] == msg['FromUserName']:
-                can_next = True
-                break
-    if not can_next:
+    groups = list(
+        filter(lambda group: group['NickName'] in reply_group_list and group['UserName'] == msg['FromUserName'],
+               itchat.get_chatrooms()))
+    if not groups:
         return
+    group_ = groups[0]
     text_ = msg['Text']
-    reply = Tuling.get_response(text_)
-    print('收到消息：%s,回复消息：%s' % (text_, reply))
+    nick_name_ = pinyin.get_pinyin(group_['NickName']).replace("-", '')
+    reply = '【七七回复】' + Tuling.get_response(text_, user=nick_name_)
+    print('收到群%s消息：%s,回复消息： %s' % (nick_name_, text_, reply))
     return reply
 
 
-@itchat.msg_register(itchat.content.TEXT, isFriendChat=True)
+@itchat.msg_register([itchat.content.TEXT], isFriendChat=True)
+def text_listener(msg):
+    friends = list(
+        filter(lambda friend: friend['NickName'] in reply_friend_list and friend['UserName'] == msg['FromUserName'],
+               itchat.get_friends()))
+    if not friends:
+        return
+    friends_ = friends[0]
+    text_ = msg['Text']
+    nick_name_ = pinyin.get_pinyin(friends_['NickName']).replace("-", '')
+    reply = '【七七回复】' + Tuling.get_response(text_, user=nick_name_)
+    print('收到朋友%s消息：%s,回复消息 %s' % (nick_name_, text_, reply))
+    return reply
+
+
+# @itchat.msg_register(itchat.content.TEXT, isFriendChat=True)
 def text_listener(msg):
     msg_text_ = msg['Text']
     print('收到消息%s' % msg_text_)
@@ -59,5 +72,6 @@ def text_listener(msg):
 
 
 if __name__ == '__main__':
+    pinyin = xpinyin.Pinyin()
     RuleClient.config()
     WxChat()
